@@ -5,12 +5,12 @@ class Engine {
     this.nodes = nodes;
     this.lastTime = performance.now();
     
-    requestAnimationFrame((t) => this._loop(t));
+    requestAnimationFrame((t) => this._loop(t)); //da runa vsak frame
   }
 
-  _loop(timestamp) {
+  _loop(timestamp) { 
     const delta = (timestamp - this.lastTime) / 1000;
-    const safeDelta = Math.min(delta, 0.1);
+    const safeDelta = Math.min(delta, 0.1); // racunanje casa med frami
     this.lastTime = timestamp;
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -146,7 +146,7 @@ class Sprite2D {
 
     ctx.drawImage(
       this.texture, 
-      -this.width / 2, 
+      -this.width / 2, //ker rise iz sredisca v obe smeri
       -this.height / 2, 
       this.width, 
       this.height
