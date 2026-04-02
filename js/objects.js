@@ -4,7 +4,7 @@ class Engine {
     this.ctx = this.canvas.getContext("2d");
     this.nodes = nodes;
     this.lastTime = performance.now();
-    
+
     requestAnimationFrame((t) => this._loop(t));
   }
 
@@ -20,14 +20,11 @@ class Engine {
 
     this.nodes.forEach(node => {
       if (node instanceof Ball) {
-        node.process(safeDelta, this.nodes.filter(n => 
+        node.process(safeDelta, this.nodes.filter(n =>
           n !== node && // filter self so it doesnt collide w/ itself
-          n.collider && // has a collider
-          !(n instanceof Item) // no items
+          n.collider  // has a collider
         ));
 
-      } else if (node instanceof Item) {
-        node.process(delta, [worldBorder]);
       } else if (node.process) {
         node.process(safeDelta, Viewport);
       }
@@ -50,7 +47,7 @@ class Vector2 {
   }
 
   normalize() {
-    var length =  Math.sqrt(this.x * this.x + this.y * this.y);
+    var length = Math.sqrt(this.x * this.x + this.y * this.y);
 
     // so we dont divide w/ 0
     if (length > 0) {
@@ -151,7 +148,7 @@ class Sprite2D {
     this.owner = owner;
     this.width = width;
     this.height = height;
-    
+
     this.texture = new Image();
     this.texture.src = imagePath;
   }
@@ -160,15 +157,15 @@ class Sprite2D {
     if (!this.texture.complete) return;
 
     ctx.save();
-    
+
     ctx.translate(this.owner.position.x, this.owner.position.y);
     ctx.rotate(this.owner.rotation * Math.PI / 180);
 
     ctx.drawImage(
-      this.texture, 
-      -this.width / 2, 
-      -this.height / 2, 
-      this.width, 
+      this.texture,
+      -this.width / 2,
+      -this.height / 2,
+      this.width,
       this.height
     );
 
@@ -191,14 +188,14 @@ class Node {
   }
 
   queueFree() {
-    this.isQueueFreed = true; 
+    this.isQueueFreed = true;
   }
 }
 
 class Gravity {
   constructor(owner, gravityStrength = 980) {
     this.owner = owner;
-    this.gravity = gravityStrength; 
+    this.gravity = gravityStrength;
   }
 
   process(delta) {
@@ -213,7 +210,7 @@ class Node2D extends Node {
     super();
     this.position = position;
     this._rotation = 0; // internal private variable
-    this.rotation = rotation; 
+    this.rotation = rotation;
   }
 
   set rotation(value) {
@@ -228,69 +225,11 @@ class Node2D extends Node {
   getAngleTo(point) {
     const deltaX = point.x - this.position.x;
     const deltaY = point.y - this.position.y;
-    
+
     const targetAngle = Math.atan2(deltaY, deltaX);
     const currentRotationRad = this.rotation * Math.PI / 180;
 
     return targetAngle - currentRotationRad;
-  }
-}
-
-class Item extends Node2D {
-  constructor(
-    position = new Vector2(), 
-    startDirection = new Vector2(), 
-    startSpeed = 0, 
-    itemName = "none", 
-    imagePath = "images/items/none.png", 
-    width = 30, 
-    height = 20,
-    paddleRef = new Paddle()) {
-
-    super(position, 0);
-    this.itemName = itemName;
-    
-    this.velocity = startDirection.clone().normalize().multiply(startSpeed);
-    this.gravityCalc = new Gravity(this);
-
-    this.paddleRef = paddleRef;
-    this.collider = new BoxCollider(width, height);
-    this.renderer = new Sprite2D(this, imagePath, width, height);
-  }
-
-  process(delta, boundaries = []) {
-    this.gravityCalc.process(delta);
-
-    if (this.position.y > worldBorder.height - 100) {
-      this.queueFree();
-    }
-
-    // 1. Calculate how far we move this frame
-    const distanceThisFrame = Math.sqrt(this.velocity.x ** 2 + this.velocity.y ** 2) * delta;
-    
-    // We can use the item's height for step size
-    const stepSize = this.collider.height / 2; 
-    const steps = Math.ceil(distanceThisFrame / stepSize) || 1;
-    
-    // The velocity slice for each mini-step
-    const stepVelocity = this.velocity.clone().multiply(delta / steps);
-
-    // 2. Step through movement
-    for (let i = 0; i < steps; i++) {
-      this.position.addVector(stepVelocity);
-      
-      // Bounce off walls
-      boundaries.forEach(wall => {
-        resolveBoxCollision(this, wall);
-      });
-      
-      // Check for paddle collection!
-      if (checkCollision(this, paddle)) {
-        console.log("collected item: " + this.itemName);
-        this.queueFree();
-        return; // it doesn't kill itself immediately, might as well return out of process now
-      }
-    }
   }
 }
 
@@ -299,7 +238,7 @@ class WorldBorder extends Node2D {
     super(position, 0);
     this.width = width;
     this.height = height;
-    
+
     this.collider = new BoxCollider(width, height, true);
   }
 }
@@ -323,10 +262,10 @@ class Ball extends Node2D {
     this.velocity = new Vector2();
     this.diameter = diameter;
     this.paddleRef = paddleObj;
-    
-    const visualScale = 1.0; 
+
+    const visualScale = 1.0;
     const spriteSize = diameter * visualScale;
-    
+
     this.renderer = new Sprite2D(this, "images/ball/ball.png", spriteSize, spriteSize);
   }
 
@@ -336,7 +275,7 @@ class Ball extends Node2D {
     }
 
     this.speed += this.acceleration * delta;
-    
+
     if (this.speed <= 200) return;
 
     this.direction.normalize();
@@ -349,14 +288,28 @@ class Ball extends Node2D {
 
     for (let i = 0; i < steps; i++) {
       this.position.addVector(stepVelocity);
-      
+
       colliders.forEach(collider => {
-      const didHit = resolveBoxCollision(this, collider);
-      
-      if (didHit && collider === this.paddleRef) {
-        this.direction = radToDir(this.getAngleTo(this.paddleRef.position)).multiply(-1);
-      }
-    });
+        const didHit = resolveBoxCollision(this, collider);
+
+        if (didHit && collider === this.paddleRef) {
+          // 1. Izračunamo, kje na paddlu smo zadeli (relativno na sredino paddla)
+          // Rezultat bo npr. med -50 (leva stran) in +50 (desna stran) - odvisno od širine paddla
+          const relativeHitX = this.position.x - this.paddleRef.position.x;
+
+          // 2. Normaliziramo na vrednost med -1.0 (čisto levo) in 1.0 (čisto desno)
+          const normalizedHitX = relativeHitX / (this.paddleRef.width / 2);
+
+          // 3. Določimo maksimalni kot odboja (npr. 60 stopinj levo in desno od sredine)
+          const maxBounceAngle = 60 * (Math.PI / 180); // pretvorba v radiane
+
+          // 4. Izračunamo končni kot: -90 stopinj (smer gor) + naš zamik
+          const bounceAngle = (-90 * (Math.PI / 180)) + (normalizedHitX * maxBounceAngle);
+
+          // 5. Iz kota naredimo nov smerni vektor
+          this.direction = new Vector2(Math.cos(bounceAngle), Math.sin(bounceAngle)).normalize();
+        }
+      });
     }
   }
 }
@@ -368,7 +321,8 @@ class Paddle extends Node2D {
     this.width = width;
     this.height = height;
 
-    this.targetX = position.x;
+    // Dodamo hitrost premikanja (npr. 500 pikslov na sekundo)
+    this.speed = 800;
 
     this.collider = new BoxCollider(this.width, this.height);
     this.renderer = new CanvasItem(this, ctx => {
@@ -379,22 +333,39 @@ class Paddle extends Node2D {
     });
     this.renderer.color = color;
 
-    // Direct Mouse Listener
-    window.addEventListener("mousemove", (e) => this._updateMousePos(e));
-  }
+    // Objekt za beleženje, ali je tipka trenutno pritisnjena
+    this.keys = {
+      ArrowLeft: false,
+      ArrowRight: false
+    };
 
-  _updateMousePos(e) {
-    const rect = engine.canvas.getBoundingClientRect();
-    this.targetX = e.clientX - rect.left;
+    // Event listenerja spreminjata samo stanje (true/false)
+    window.addEventListener("keydown", (e) => {
+      if (this.keys.hasOwnProperty(e.key)) {
+        this.keys[e.key] = true;
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      if (this.keys.hasOwnProperty(e.key)) {
+        this.keys[e.key] = false;
+      }
+    });
   }
 
   process(delta, viewport) {
-    this.position.x += this.targetX - this.position.x;
+    // Gladko premikanje glede na pritisnjene tipke in čas (delta)
+    if (this.keys.ArrowLeft) {
+      this.position.x -= this.speed * delta;
+    }
+    if (this.keys.ArrowRight) {
+      this.position.x += this.speed * delta;
+    }
 
+    // Omejitev zaslona (clamping) - da paddle ne uide ven
     if (viewport) {
       const halfWidth = this.width / 2;
-      
-      // Math.min/max "clamping" logic
+
       if (this.position.x < halfWidth) {
         this.position.x = halfWidth;
       }
@@ -407,15 +378,14 @@ class Paddle extends Node2D {
 
 class Brick extends Entity2D {
   constructor(position = new Vector2(), rotation = 0, health = 1, width = 10, height = 10) {
-    position.x -= width/2;
-    position.y -= height/2;
+    position.x -= width / 2;
+    position.y -= height / 2;
     super(position, rotation);
 
     this.width = width;
     this.height = height;
-    this.itemChance = 0.10; // chance to spawn an item pickup
     this.collider = new BoxCollider(this.width, this.height);
-    this.healthComponent = new HealthComponent(health, () => this.die());
+    this.healthComponent = new HealthComponent(health, () => this.queueFree());
     this.renderer = new CanvasItem(this, (ctx) => {
       ctx.beginPath();
       ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
@@ -425,28 +395,6 @@ class Brick extends Entity2D {
   }
 
   process() {
-    this.renderer.color = "rgb(0,0," + this.healthComponent.health*70 + ")";
-  }
-
-  die() {
-    if (Math.random() > this.itemChance) {
-      this.queueFree();
-      return
-    }
-
-    const item = new Item(
-      this.position, 
-      randomizeDir(new Vector2(0, -1), 90),
-      400, 
-      "item",
-      "images/items/default.png",
-      40,
-      30,
-      paddle
-    )
-    item.gravityCalc.gravity = 500;
-
-    engine.add(item);
-    this.queueFree();
+    this.renderer.color = "rgb(0,"+this.healthComponent.health * 50 + ", 0)";
   }
 }

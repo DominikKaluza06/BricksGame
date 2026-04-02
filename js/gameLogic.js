@@ -15,17 +15,17 @@ const borderPos = new Vector2(Viewport.w / 2, borderCenterY);
 const worldBorder = new WorldBorder(borderPos, Viewport.w, borderHeight);
 const paddle = new Paddle(
   new Vector2(Viewport.w / 2, Viewport.h - 20), 
-  0, 100, 15, "green");
-const ball = new Ball(new Vector2(150, 450), 0, new Vector2(1, 3), 500, 20, paddle);
+  0, 150, 15, "blue");
+const ball = new Ball(new Vector2(500, 650), 0, new Vector2(0.1, -1), 500, 20, paddle);
 /*
-// this is how to give an object a custom function
-// AFTER initialization and declaration
+ this is how to give an object a custom function
+ AFTER initialization and declaration
 brick2.process = function process(delta) {
   this.rotation += 25 * delta;
 }
 */
 
-// create a VERY important engine which runs the entire game!
+// create a VERY important engine which runs the entire game
 const engine = new Engine("canvas", []);
 
 
@@ -40,7 +40,7 @@ function init() {
       const brickPos = new Vector2(Viewport.w / brickRows * x, brickHeight * y);
 
       engine.add(new Brick(
-        brickPos, 0, Math.floor(Math.random() * 2 + 1), Viewport.w / brickRows, brickHeight
+        brickPos, 0, Math.floor(Math.random() * 4 + 1), Viewport.w / brickRows, brickHeight
       ));
     }
   }
