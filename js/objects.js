@@ -100,8 +100,9 @@ class BoxCollider {
 }
 
 class HealthComponent {
-  constructor(health = 100, onDeath) {
-    this.health = health;
+  constructor(health = 100, onDeath, onHealthChanged) {
+    this._health = health;
+    this.HealthChanged = onHealthChanged;
     this.onDeath = onDeath;
   }
 
@@ -111,6 +112,15 @@ class HealthComponent {
     if (this.health <= 0) {
       if (this.onDeath) this.onDeath();
     }
+  }
+
+  set health(value){
+    this._health = value;
+    if (this.HealthChanged)
+        this.HealthChanged();
+  }
+  get health() {
+    return this._health;
   }
 }
 
@@ -244,7 +254,7 @@ class Ball extends Node2D {
 
     this.direction = startDirection.normalize();
     this.speed = speed;
-    this.acceleration = 2.5;
+    this.acceleration = 5;
     this.velocity = new Vector2();
     this.diameter = diameter;
     this.paddleRef = paddleObj;
@@ -371,16 +381,23 @@ class Brick extends Entity2D {
     this.width = width;
     this.height = height;
     this.collider = new BoxCollider(this.width, this.height);
-    this.healthComponent = new HealthComponent(health, () => this.queueFree());
+    this.healthComponent = new HealthComponent(
+      health,
+      () => this.queueFree(),
+      () => this.checkColor()
+    );
     this.renderer = new CanvasItem(this, (ctx) => {
       ctx.beginPath();
       ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
       ctx.fill();
       ctx.closePath();
     });
+
+    this.checkColor();
   }
 
-  process() {
+
+  checkColor() {
     this.renderer.color = "rgb(0,"+this.healthComponent.health * 50 + ", 0)";
   }
 }

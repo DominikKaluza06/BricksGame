@@ -1,3 +1,5 @@
+var currentLevel = 0; // Tracks which level the player is on
+
 const Viewport = {
   w: canvas.width,
   h: canvas.height,
@@ -25,27 +27,80 @@ brick2.process = function process(delta) {
 }
 */
 
+class GameManager extends Node {
+  process(delta) {
+    // Look through all engine nodes and count how many are Bricks
+    const bricksLeft = engine.nodes.filter(node => node instanceof Brick).length;
+
+    // If no bricks are left, progress to the next level
+    if (bricksLeft === 0) {
+      currentLevel++;
+      
+      if (currentLevel < levels.length) {
+        loadLevel(currentLevel); // Load next map
+      } else {
+        console.log("You win! Game Over.");
+        this.queueFree(); // Stop checking, game is done
+      }
+    }
+  }
+}
+
 // create a VERY important engine which runs the entire game
 const engine = new Engine("canvas", []);
 
 
-init();
-function init() {
-  const brickHeight = 20;
-  var brickRows = 10;
-  var brickCols = 20;
-  
-  for (var x = 1; x <= brickRows; x++) {
-    for (var y = 1; y <= brickCols; y++) {
-      const brickPos = new Vector2(Viewport.w / brickRows * x, brickHeight * y);
+function loadLevel(currentLevel) {
+  // 1. Clear out all old objects from the engine memory
+  engine.nodes = [];
 
-      engine.add(new Brick(
-        brickPos, 0, Math.floor(Math.random() * 4 + 1), Viewport.w / brickRows, brickHeight
-      ));
+  // 2. Add our persistent static objects back
+  engine.add(worldBorder);
+  
+  // 3. Reset Paddle and Ball positions
+  paddle.position = new Vector2(Viewport.w / 2, Viewport.h - 20);
+  ball.position = new Vector2(Viewport.w / 2, Viewport.h - 100);
+  ball.velocity = new Vector2(0, 0); 
+  ball.speed = 500;
+  ball.direction = new Vector2(0.1, -1).normalize();
+  
+  engine.add(paddle);
+  engine.add(ball);
+
+  // 4. Load the bricks for this specific level
+  const layout = levels[currentLevel];
+  if (!layout) {
+    console.log("YOU BEAT THE GAME!");
+    return; 
+  }
+
+  const rows = layout.length;
+  const cols = layout[0].length;
+  
+  const brickWidth = Viewport.w / cols;
+  const brickHeight = 20;
+
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      const brickHealth = layout[r][c];
+      
+      // Only spawn a brick if the number is greater than 0
+      if (brickHealth > 0) {
+        // Calculate where to place it on the canvas
+        const brickPos = new Vector2(
+          (c * brickWidth) + brickWidth, 
+          (r * brickHeight) + (brickHeight / 2)
+        );
+
+        engine.add(new Brick(brickPos, 0, brickHealth, brickWidth, brickHeight));
+      }
     }
   }
-  
-  engine.add(worldBorder);
-  engine.add(ball);
-  engine.add(paddle);
+
+  // 5. Add the Game Manager to track level progression (See step 3!)
+  engine.add(new GameManager());
 }
+
+
+// Start the game!
+loadLevel(currentLevel);
