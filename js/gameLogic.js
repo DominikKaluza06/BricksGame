@@ -16,7 +16,7 @@ const worldBorder = new WorldBorder(borderPos, Viewport.w, borderHeight);
 const paddle = new Paddle(
   new Vector2(Viewport.w / 2, Viewport.h - 20), 
   0, 150, 15, "blue");
-const ball = new Ball(new Vector2(500, 650), 0, new Vector2(0.1, -1), 500, 20, paddle);
+const ball = new Ball(new Vector2(400, 750), 0, new Vector2(0.1, -1), 500, 20, paddle);
 /*
  this is how to give an object a custom function
  AFTER initialization and declaration

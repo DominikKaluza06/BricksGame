@@ -192,18 +192,7 @@ class Node {
   }
 }
 
-class Gravity {
-  constructor(owner, gravityStrength = 980) {
-    this.owner = owner;
-    this.gravity = gravityStrength;
-  }
 
-  process(delta) {
-    if (!this.owner.velocity) return;
-
-    this.owner.velocity.y += this.gravity * delta;
-  }
-}
 
 class Node2D extends Node {
   constructor(position = new Vector2(0, 0), rotation = 0) {
@@ -214,7 +203,7 @@ class Node2D extends Node {
   }
 
   set rotation(value) {
-    // standard math for degrees (0 to 360)
+    // makes sure it stays under 360
     this._rotation = ((value % 360) + 360) % 360;
   }
 
@@ -247,9 +236,6 @@ class Entity2D extends Node2D {
   constructor(position = new Vector2(), rotation = 0) {
     super(position, rotation);
   }
-
-  // might add some shit here i don't know.
-  // leave it be for now
 }
 
 class Ball extends Node2D {
