@@ -63,7 +63,7 @@ class Vector2 {
     this.x *= multiplier;
     this.y *= multiplier;
 
-    return this; // for chaining: vector.normalize().multiply(100) ...
+    return this; // for chaining: vector.normalize().multiply(100) 
   }
 
   addVector(vector = new Vector2) {
@@ -228,7 +228,7 @@ class Ball extends Node2D {
     if (this.speed <= 200) return;
 
     this.direction.normalize();
-    this.velocity = this.direction.clone().multiply(this.speed * delta);
+    this.velocity = this.direction.multiply(this.speed * delta);
 
     const distanceThisFrame = Math.sqrt(this.velocity.x ** 2 + this.velocity.y ** 2);
     const stepSize = this.diameter / 2;
