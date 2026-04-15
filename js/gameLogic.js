@@ -18,7 +18,7 @@ const worldBorder = new WorldBorder(borderPos, Viewport.w, borderHeight);
 const paddle = new Paddle(
   new Vector2(Viewport.w / 2, Viewport.h - 20), 
   0, 150, 15, "blue");
-const ball = new Ball(new Vector2(400, 750), 0, new Vector2(0.1, -1), 500, 20, paddle);
+const ball = new Ball(new Vector2(paddle.position.x, paddle.position.y - 10), 0, new Vector2(0.1, -1), 500, 20, paddle);
 /*
  this is how to give an object a custom function
  AFTER initialization and declaration
@@ -59,10 +59,10 @@ function loadLevel(currentLevel) {
   
   // 3. Reset Paddle and Ball positions
   paddle.position = new Vector2(Viewport.w / 2, Viewport.h - 20);
-  ball.position = new Vector2(Viewport.w / 2, Viewport.h - 100);
+  ball.position = new Vector2(paddle.position.x, paddle.position.y - 10);
   ball.velocity = new Vector2(0, 0); 
   ball.speed = 500;
-  ball.direction = new Vector2(0.1, -1).normalize();
+  ball.direction = new Vector2(0.1, -1);
   
   engine.add(paddle);
   engine.add(ball);
@@ -97,7 +97,7 @@ function loadLevel(currentLevel) {
     }
   }
 
-  // 5. Add the Game Manager to track level progression (See step 3!)
+  // 5. Add the Game Manager to track level progression 
   engine.add(new GameManager());
 }
 

@@ -158,9 +158,18 @@ class Sprite2D {
     this.owner = owner;
     this.width = width;
     this.height = height;
+    this._imagePath = imagePath;
 
     this.texture = new Image();
-    this.texture.src = imagePath;
+    this.texture.src = this._imagePath;
+  }
+
+  set imagePath(value) {
+    this._imagePath = value;
+    this.texture.src = this._imagePath;
+  }
+  get imagePath() {
+    return this._imagePath;
   }
 
   draw(ctx) {
@@ -267,7 +276,10 @@ class Ball extends Node2D {
 
   process(delta, colliders = []) {
     if (this.position.y > worldBorder.height - 100) {
-      this.queueFree();
+      ball.position = new Vector2(paddle.position.x, paddle.position.y - 10);
+      ball.velocity = new Vector2(0, 0); 
+      ball.speed = 500;
+      ball.direction = new Vector2(0.1, -1);
     }
 
     this.speed += this.acceleration * delta;
@@ -321,13 +333,12 @@ class Paddle extends Node2D {
     this.speed = 800;
 
     this.collider = new BoxCollider(this.width, this.height);
-    this.renderer = new CanvasItem(this, ctx => {
-      ctx.beginPath();
-      ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
-      ctx.fill();
-      ctx.closePath();
-    });
-    this.renderer.color = color;
+    this.renderer = new Sprite2D(this,
+      "images/paddle/paddle.png",
+      this.width,
+      this.height
+    );
+    
 
     // Objekt za beleženje, ali je tipka trenutno pritisnjena
     this.keys = {
@@ -386,18 +397,18 @@ class Brick extends Entity2D {
       () => this.queueFree(),
       () => this.checkColor()
     );
-    this.renderer = new CanvasItem(this, (ctx) => {
-      ctx.beginPath();
-      ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
-      ctx.fill();
-      ctx.closePath();
-    });
+    this.renderer = new Sprite2D(
+      this, 
+      "images/brick/hp"+this.healthComponent.health+".png", 
+      this.width, 
+      this.height
+    );
 
     this.checkColor();
   }
 
 
   checkColor() {
-    this.renderer.color = "rgb(0,"+this.healthComponent.health * 50 + ", 0)";
+    this.renderer.imagePath = "images/brick/hp"+this.healthComponent.health+".png";
   }
 }
