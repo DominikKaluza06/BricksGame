@@ -1,0 +1,53 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+body{
+    background-image: url("../images/background.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+canvas{
+    background-image: url("../images/canvasbg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+.centered_content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.col_dir {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+.border {
+  border: 3px solid black;
+}
+
+.header-container {
+  margin-bottom: 40px; /* Adjust this to push the rest of the stuff away */
+  text-align: center;  /* Optional: centers the titles */
+}
+
+.white, .black {
+  display: inline-block;
+  font-size: 3rem;
+  margin: 0;           /* Removes default h1 spacing */
+  padding: 0 5px;      /* Adds a tiny gap between the words */
+}
+
+.white {
+  color: white;
+}
+
+.black {
+  color: black;
+}

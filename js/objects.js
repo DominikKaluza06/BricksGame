@@ -51,7 +51,6 @@ class Vector2 {
 
     // so we dont divide w/ 0
     if (length > 0) {
-
       // normalization happens here
       this.x /= length;
       this.y /= length;
@@ -66,19 +65,7 @@ class Vector2 {
 
     return this; // for chaining: vector.normalize().multiply(100) ...
   }
-  add(adder = 1) {
-    this.x += adder;
-    this.y += adder;
 
-    return this;
-  }
-
-  multVector(vector = new Vector2) {
-    this.x *= vector.x;
-    this.y *= vector.y;
-
-    return this;
-  }
   addVector(vector = new Vector2) {
     this.x += vector.x;
     this.y += vector.y;
@@ -124,35 +111,6 @@ class HealthComponent {
   }
 }
 
-class CanvasItem {
-  constructor(owner, drawFunction) {
-    this.owner = owner;
-    this.visible = true;
-    this.alpha = 1;
-    this.color = "rgba(0,0,0,0)"; // Default color property
-    this.drawFunction = drawFunction;
-  }
-
-  draw(ctx) {
-    if (!this.visible || this.alpha <= 0) return;
-
-    ctx.save();
-    ctx.translate(this.owner.position.x, this.owner.position.y);
-    ctx.rotate(this.owner.rotation * Math.PI / 180);
-    ctx.globalAlpha = this.alpha;
-
-    // Apply the color to BOTH fill and stroke so the callback can choose
-    ctx.fillStyle = this.color;
-    ctx.strokeStyle = this.color;
-
-    if (this.drawFunction) {
-      this.drawFunction(ctx);
-    }
-
-    ctx.restore();
-  }
-}
-
 class Sprite2D {
   constructor(owner = this, imagePath = "", width = 0, height = 0) {
     this.owner = owner;
@@ -195,11 +153,6 @@ class Sprite2D {
 class Node {
   constructor() {
     this.isQueueFreed = false;
-    this.ready();
-  }
-
-  ready() {
-    // children run this code once and never again
   }
 
   process(delta) {
@@ -210,8 +163,6 @@ class Node {
     this.isQueueFreed = true;
   }
 }
-
-
 
 class Node2D extends Node {
   constructor(position = new Vector2(0, 0), rotation = 0) {
@@ -228,16 +179,6 @@ class Node2D extends Node {
 
   get rotation() {
     return this._rotation;
-  }
-
-  getAngleTo(point) {
-    const deltaX = point.x - this.position.x;
-    const deltaY = point.y - this.position.y;
-
-    const targetAngle = Math.atan2(deltaY, deltaX);
-    const currentRotationRad = this.rotation * Math.PI / 180;
-
-    return targetAngle - currentRotationRad;
   }
 }
 
@@ -406,7 +347,6 @@ class Brick extends Entity2D {
 
     this.checkColor();
   }
-
 
   checkColor() {
     this.renderer.imagePath = "images/brick/hp"+this.healthComponent.health+".png";
