@@ -101,10 +101,10 @@ class HealthComponent {
     }
   }
 
-  set health(value){
+  set health(value) {
     this._health = value;
     if (this.HealthChanged)
-        this.HealthChanged();
+      this.HealthChanged();
   }
   get health() {
     return this._health;
@@ -126,17 +126,13 @@ class Sprite2D {
     this._imagePath = value;
     this.texture.src = this._imagePath;
   }
-  get imagePath() {
-    return this._imagePath;
-  }
 
   draw(ctx) {
     if (!this.texture.complete) return;
 
     ctx.save();
-
+    // Samo premik, brez rotacije
     ctx.translate(this.owner.position.x, this.owner.position.y);
-    ctx.rotate(this.owner.rotation * Math.PI / 180);
 
     ctx.drawImage(
       this.texture,
@@ -165,11 +161,9 @@ class Node {
 }
 
 class Node2D extends Node {
-  constructor(position = new Vector2(0, 0), rotation = 0) {
+  constructor(position = new Vector2(0, 0)) {
     super();
     this.position = position;
-    this._rotation = 0; // internal private variable
-    this.rotation = rotation;
   }
 
   set rotation(value) {
@@ -193,15 +187,14 @@ class WorldBorder extends Node2D {
 }
 
 class Entity2D extends Node2D {
-  constructor(position = new Vector2(), rotation = 0) {
-    super(position, rotation);
+  constructor(position = new Vector2()) {
+    super(position);
   }
 }
 
 class Ball extends Node2D {
-  constructor(position = new Vector2(), rotation = 0, startDirection = new Vector2(1, 0), speed = 0, diameter = 0, paddleObj = new Paddle()) {
-    super(position, rotation);
-
+  constructor(position = new Vector2(), startDirection = new Vector2(1, 0), speed = 0, diameter = 0, paddleObj = new Paddle()) {
+    super(position); // Ni več rotacije
     this.direction = startDirection.normalize();
     this.speed = speed;
     this.acceleration = 5;
@@ -211,14 +204,13 @@ class Ball extends Node2D {
 
     const visualScale = 1.0;
     const spriteSize = diameter * visualScale;
-
     this.renderer = new Sprite2D(this, "images/ball/ball.png", spriteSize, spriteSize);
   }
 
   process(delta, colliders = []) {
     if (this.position.y > worldBorder.height - 100) {
       ball.position = new Vector2(paddle.position.x, paddle.position.y - 10);
-      ball.velocity = new Vector2(0, 0); 
+      ball.velocity = new Vector2(0, 0);
       ball.speed = 500;
       ball.direction = new Vector2(0.1, -1);
     }
@@ -264,22 +256,17 @@ class Ball extends Node2D {
 }
 
 class Paddle extends Node2D {
-  constructor(position = new Vector2(), rotation = 0, width = 100, height = 20, color = "black") {
-    super(position, rotation);
-
+  constructor(position = new Vector2(), width = 100, height = 20) {
+    super(position); // Ni več rotacije
     this.width = width;
     this.height = height;
-
-    // Dodamo hitrost premikanja (npr. 500 pikslov na sekundo)
     this.speed = 800;
-
     this.collider = new BoxCollider(this.width, this.height);
     this.renderer = new Sprite2D(this,
       "images/paddle/paddle.png",
       this.width,
-      this.height
-    );
-    
+      this.height);
+
 
     // Objekt za beleženje, ali je tipka trenutno pritisnjena
     this.keys = {
@@ -325,10 +312,10 @@ class Paddle extends Node2D {
 }
 
 class Brick extends Entity2D {
-  constructor(position = new Vector2(), rotation = 0, health = 1, width = 10, height = 10) {
+  constructor(position = new Vector2(), health = 1, width = 10, height = 10) {
     position.x -= width / 2;
     position.y -= height / 2;
-    super(position, rotation);
+    super(position); // Ni več rotacije
 
     this.width = width;
     this.height = height;
@@ -338,17 +325,10 @@ class Brick extends Entity2D {
       () => this.queueFree(),
       () => this.checkColor()
     );
-    this.renderer = new Sprite2D(
-      this, 
-      "images/brick/hp"+this.healthComponent.health+".png", 
-      this.width, 
-      this.height
-    );
-
-    this.checkColor();
+    this.renderer = new Sprite2D(this, "images/brick/hp" + this.healthComponent.health + ".png", this.width, this.height);
   }
 
   checkColor() {
-    this.renderer.imagePath = "images/brick/hp"+this.healthComponent.health+".png";
+    this.renderer.imagePath = "images/brick/hp" + this.healthComponent.health + ".png";
   }
 }

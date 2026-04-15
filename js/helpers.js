@@ -2,28 +2,19 @@ function resolveBoxCollision(mover, target) {
   if (!target.collider) return false;
 
   const collider = target.collider;
-  const theta = target.rotation * (Math.PI / 180);
-  const cos = Math.cos(theta);
-  const sin = Math.sin(theta);
 
-  // Un-rotate mover position into the target's local space
+  // Ker ni rotacije, sta dx in dy že v "lokalnem" prostoru
   const dx = mover.position.x - target.position.x;
   const dy = mover.position.y - target.position.y;
-
-  let localX = dx * cos + dy * sin;
-  let localY = -dx * sin + dy * cos;
 
   const halfW = collider.width / 2;
   const halfH = collider.height / 2;
   
-  // ==========================================
-  // GENERALIZATION: Determine the Radius
-  // ==========================================
+  // Določitev radija
   let radius = 0;
   if (mover.diameter !== undefined) {
-    radius = mover.diameter / 2; // It's a Ball
+    radius = mover.diameter / 2; 
   } else if (mover.collider) {
-    // It's an Item (Box). Approximate its size as a circle for smooth bouncing.
     radius = Math.max(mover.collider.width, mover.collider.height) / 2;
   }
 
@@ -32,35 +23,33 @@ function resolveBoxCollision(mover, target) {
   // ====================
   if (collider.inverted) {
     let bounced = false;
-    let localNormalX = 0;
-    let localNormalY = 0;
+    let normalX = 0;
+    let normalY = 0;
 
-    if (localX > halfW - radius) {
-      localX = halfW - radius; localNormalX = -1; bounced = true;
-    } else if (localX < -halfW + radius) {
-      localX = -halfW + radius; localNormalX = 1; bounced = true;
+    // Preverjanje mej (brez sin/cos matrik)
+    if (dx > halfW - radius) {
+      mover.position.x = target.position.x + halfW - radius; 
+      normalX = -1; bounced = true;
+    } else if (dx < -halfW + radius) {
+      mover.position.x = target.position.x - halfW + radius; 
+      normalX = 1; bounced = true;
     }
 
-    if (localY > halfH - radius) {
-      localY = halfH - radius; localNormalY = -1; bounced = true;
-    } else if (localY < -halfH + radius) {
-      localY = -halfH + radius; localNormalY = 1; bounced = true;
+    if (dy > halfH - radius) {
+      mover.position.y = target.position.y + halfH - radius; 
+      normalY = -1; bounced = true;
+    } else if (dy < -halfH + radius) {
+      mover.position.y = target.position.y - halfH + radius; 
+      normalY = 1; bounced = true;
     }
 
     if (bounced) {
-      mover.position.x = target.position.x + (localX * cos - localY * sin);
-      mover.position.y = target.position.y + (localX * sin + localY * cos);
-
-      const globalNormalX = localNormalX * cos - localNormalY * sin;
-      const globalNormalY = localNormalX * sin + localNormalY * cos;
-
-      // GENERALIZATION: Bounce the Velocity, not just Direction
-      const dot = (mover.velocity.x * globalNormalX) + (mover.velocity.y * globalNormalY);
+      // Odboj hitrosti: v' = v - 2 * (v ⋅ n) * n
+      const dot = (mover.velocity.x * normalX) + (mover.velocity.y * normalY);
       if (dot < 0) {
-        mover.velocity.x -= 2 * dot * globalNormalX;
-        mover.velocity.y -= 2 * dot * globalNormalY;
+        mover.velocity.x -= 2 * dot * normalX;
+        mover.velocity.y -= 2 * dot * normalY;
         
-        // Sync the Ball's direction vector if it has one
         if (mover.direction) {
           mover.direction.x = mover.velocity.x;
           mover.direction.y = mover.velocity.y;
@@ -75,31 +64,31 @@ function resolveBoxCollision(mover, target) {
   // ==========================================
   // STANDARD COLLISION (PADDLE / BRICKS)
   // ==========================================
-  const closestX = Math.max(-halfW, Math.min(localX, halfW));
-  const closestY = Math.max(-halfH, Math.min(localY, halfH));
+  // Poiščemo najbližjo točko na pravokotniku (AABB logic)
+  const closestX = Math.max(-halfW, Math.min(dx, halfW));
+  const closestY = Math.max(-halfH, Math.min(dy, halfH));
 
-  const diffX = localX - closestX;
-  const diffY = localY - closestY;
+  const diffX = dx - closestX;
+  const diffY = dy - closestY;
   const distanceSq = (diffX * diffX) + (diffY * diffY);
 
   if (distanceSq <= radius * radius) {
     const distance = Math.sqrt(distanceSq) || 0.0001;
     const penetration = radius - distance;
 
-    const localNormalX = diffX / distance;
-    const localNormalY = diffY / distance;
+    // Normala trka
+    const normalX = diffX / distance;
+    const normalY = diffY / distance;
 
-    const globalNormalX = localNormalX * cos - localNormalY * sin;
-    const globalNormalY = localNormalX * sin + localNormalY * cos;
+    // Popravek pozicije (da žogica ne obtiči v objektu)
+    mover.position.x += normalX * penetration;
+    mover.position.y += normalY * penetration;
 
-    mover.position.x += globalNormalX * penetration;
-    mover.position.y += globalNormalY * penetration;
-
-    const dot = (mover.velocity.x * globalNormalX) + (mover.velocity.y * globalNormalY);
+    const dot = (mover.velocity.x * normalX) + (mover.velocity.y * normalY);
 
     if (dot < 0) {
-      mover.velocity.x -= 2 * dot * globalNormalX;
-      mover.velocity.y -= 2 * dot * globalNormalY;
+      mover.velocity.x -= 2 * dot * normalX;
+      mover.velocity.y -= 2 * dot * normalY;
       
       if (mover.direction) {
         mover.direction.x = mover.velocity.x;
