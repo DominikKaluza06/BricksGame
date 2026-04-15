@@ -1,61 +1,106 @@
-<body>
-  <section id="readme" style="max-width: 800px; margin: 0 auto; font-family: sans-serif; line-height: 1.6; color: #333; padding: 20px;">
-    
-    <header style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-      <h1 style="margin: 0;">Bricks Board</h1>
-      <p style="font-style: italic; color: #666;">A Custom-Built 2D Brick Breaker Engine</p>
-    </header>
+<h1 align="center">🧱 Bricks Board – Projektna naloga</h1>
 
-    <p>
-      <strong>Bricks Board</strong> is a retro arcade-style game built from the ground up using a custom-coded JavaScript game engine. Unlike standard tutorials, this project implements a <strong>Node-based architecture</strong> and a manual <strong>AABB collision resolver</strong>.
-    </p>
+<p align="center">
+  <strong>Avtor:</strong> Dominik Kaluža <br>
+  <strong>Projekt:</strong> Lasten 2D JavaScript igralni pogon – Bricks Board <br>
+  <strong>Uporabljeni jeziki:</strong> HTML (platno), CSS (stil), JavaScript (pogon in logika)
+</p>
 
-    <h2 style="color: #222;">🎮 How to Play</h2>
-    <ul style="list-style-type: square;">
-      <li><strong>Movement:</strong> Use the <strong>Left and Right Arrow keys</strong> to control the paddle.</li>
-      <li><strong>Objective:</strong> Clear all the bricks on the screen to progress to the next level.</li>
-      <li><strong>Challenge:</strong> The ball increases in speed over time. If the ball falls past your paddle, it resets to the starting position.</li>
-    </ul>
+<hr>
 
-    <h2 style="color: #222;">🛠️ Technical Features</h2>
-    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-      <tr style="background-color: #f4f4f4;">
-        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Feature</th>
-        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Description</th>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Custom Engine</strong></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Uses a custom <code>Engine</code> class that manages a <code>Node</code> tree and Delta-time for smooth performance.</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Physics</strong></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Collision detection using <code>Vector2</code> math and <code>resolveBoxCollision</code> logic.</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Level System</strong></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Dynamic level loading via multi-dimensional arrays (defined in <code>levels.js</code>).</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Asset Pipeline</strong></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Modular <code>Sprite2D</code> class handles rendering for the paddle, ball, and health-based brick textures.</td>
-      </tr>
-    </table>
+<h2>🎯 Namen in smisel projekta</h2>
 
-    <h2 style="color: #222;">📂 Project Structure</h2>
-    <pre style="background: #f9f9f9; padding: 15px; border-left: 5px solid #333; overflow-x: auto;">
+<p>
+  Projekt prikazuje izdelavo retro arkadne igre "Brick Breaker" popolnoma od začetka, brez uporabe zunanjih knjižnic (kot sta Phaser ali PixiJS). 
+  Glavni cilj je bil razviti lasten <strong>objektno usmerjen igralni pogon</strong>, ki temelji na vozliščih (nodes) in delta-času.
+</p>
+
+<ul>
+  <li><strong>Arhitektura vozlišč</strong> – Vsak element (žoga, veslo, zidaki) je "Node", kar omogoča enostavno razširljivost.</li>
+  <li><strong>Fizika in trki</strong> – Implementacija lastne AABB (Axis-Aligned Bounding Box) detekcije trkov in odbojev.</li>
+  <li><strong>Sistem stopenj</strong> – Dinamično nalaganje stopenj preko dvorazsežnih polj.</li>
+</ul>
+
+<p>
+  Projekt služi kot napreden primer uporabe JavaScripta za interaktivne aplikacije in razumevanje:
+</p>
+
+<ul>
+  <li>matematike vektorjev (Vector2 math),</li>
+  <li>optimizirane zanke igre (Game Loop),</li>
+  <li>upravljanja s pomnilnikom (QueueFree sistem),</li>
+  <li>odzivnega krmiljenja in fizikalnih odbojev.</li>
+</ul>
+
+<hr>
+
+<h2>📁 Struktura datotek</h2>
+
+<p>
+  Projekt je modularno razdeljen, kar omogoča čisto kodo in lažje vzdrževanje:
+</p>
+
+<pre>
 BricksGame/
-├── css/         # Visual styling and layout
+├── index.html              # Glavna vstopna točka s Canvas elementom
+├── css/
+│   └── style.css           # Oblikovanje ozadja in igralnega okna
 ├── js/
-│   ├── objects.js    # Core Engine, Vector, and Node classes
-│   ├── helpers.js    # Physics and Collision math
-│   ├── levels.js     # Level design data
-│   └── gameLogic.js  # Main game loop and GameManager
-└── index.html   # Main entry point
-    </pre>
+│   ├── objects.js          # Jedro pogona: Vector2, Node, Sprite2D, Engine
+│   ├── helpers.js          # Fizikalna logika in razreševanje trkov
+│   ├── levels.js           # Podatki o razporeditvi zidakov v stopnjah
+│   └── gameLogic.js        # Logika igre, GameManager in nadzor nivojev
+└── images/                 # Slikovni materiali (assets)
+    ├── ball/               # Teksture za žogico
+    ├── paddle/             # Teksture za igralčevo veslo
+    └── brick/              # Teksture za zidake glede na njihovo zdravje
+</pre>
 
-    <footer style="margin-top: 30px; font-size: 0.9em; color: #888; border-top: 1px solid #eee; padding-top: 10px;">
-      <p>Created by Dominik Kaluza. Open source under the MIT License.</p>
-    </footer>
+<hr>
 
-  </section>
-</body>
+<h2>🎮 Navodila za igranje</h2>
+
+<p>
+  Cilj igre je uničiti vse zidake na zaslonu, ne da bi žogica padla pod veslo.
+</p>
+
+<ul>
+  <li><strong>Premikanje:</strong> Uporabi smeri tipke <strong>Levo</strong> in <strong>Desno</strong> na tipkovnici.</li>
+  <li><strong>Napredovanje:</strong> Ko uničiš vse zidake, se samodejno naloži naslednja stopnja.</li>
+  <li><strong>Izziv:</strong> Žogica sčasoma rahlo pospešuje, kar oteži igranje.</li>
+</ul>
+
+<hr>
+
+<h2>🚀 Tehnične lastnosti</h2>
+
+<p align="center">
+  <strong>Dinamični odboji</strong><br>
+  Smer odboja žogice je odvisna od mesta dotika na veslu. Če žogica zadene rob vesla, se odbije pod večjim kotom, kar omogoča igralcu strateško merjenje.
+</p>
+
+<p align="center">
+  <strong>Sistem zdravja zidakov</strong><br>
+  Zidaki imajo lahko različno število življenj. Vsakič, ko so zadeti, se njihova tekstura dinamično posodobi, da odraža poškodbe.
+</p>
+
+<hr>
+
+<h2>🔗 Demo projekta</h2>
+<p align="center">
+  <a href="https://dominikkaluza06.github.io/BricksGame/"><strong>➡️ Igraj Bricks Board v živo</strong></a>
+</p>
+
+<hr>
+
+<h2>💡 Zaključek</h2>
+<p>
+  Bricks Board ni le igra, temveč ogrodje za razvoj 2D iger. Preko projekta sem utrdil znanje JavaScripta, uporabo HTML5 Canvas API-ja in konceptov, ki se uporabljajo v profesionalnih okoljih za razvoj iger.
+</p>
+
+<hr>
+
+<h2>📝 Licenca</h2>
+<p>
+  Ta projekt je licenciran pod <strong>MIT License</strong>. Za podrobnosti si oglejte <a href="https://opensource.org/licenses/MIT" target="_blank">MIT licenco</a>.
+</p>
