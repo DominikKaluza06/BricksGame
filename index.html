@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" type="images/icoc.ico" href="images/icoc.ico">
-  <title>bricksboard</title>
-</head>
+<html lang="sl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="images/icoc.ico" href="images/icoc.ico">
+    <title>Bricks Board</title>
+  </head>
 
 <body>
   <div id="main" class="centered_content col_dir">
@@ -15,17 +14,24 @@
       <h1 class="white">BRICKS</h1>
       <h1 class="black">BOARD</h1>
     </div>
+    
+    <div class="info-vrstica">
+        <p>Čas: <mark id="cas">00:00</mark></p>
+        <p>Točke: <mark id="tocke">0</mark></p>
+    </div>
+
     <div id="game_container">
       <div class="border">
         <canvas id="canvas" width="800" height="800"></canvas>
       </div>
     </div>
+    <div id="level">
+      <p id="levelShow"></p>
+    </div>
   </div>
+
+  <script src="js/jquery-4.0.0.min.js"></script>
+  <script src="js/javascript.js"></script>
+  <script src="js/levels.js"></script>
 </body>
-
-<script src="js/objects.js"></script>
-<script src="js/helpers.js"></script>
-<script src="js/levels.js"></script>
-<script src="js/gameLogic.js"></script>
-
 </html>

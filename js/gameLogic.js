@@ -1,4 +1,6 @@
 var currentLevel = 0; // Spremlja, na kateri stopnji je igralec
+const showLevel = document.getElementById("levelShow");
+showLevel.innerText ="Trenutno si na " + currentLevel + ". levelu";
 
 const Viewport = {
   w: canvas.width,
@@ -26,24 +28,6 @@ const ball = new Ball(
   paddle // Odstranjena rotacija
 );
 
-class GameManager extends Node {
-  process(delta) {
-    const bricksLeft = engine.nodes.filter(node => node instanceof Brick).length;
-
-    if (bricksLeft === 0) {
-      currentLevel++;
-      
-      if (currentLevel < levels.length) {
-        loadLevel(currentLevel); 
-      } else {
-        console.log("Zmaga! Igra končana.");
-        this.queueFree();
-      }
-    }
-  }
-}
-
-const engine = new Engine("canvas", []);
 
 function loadLevel(currentLevel) {
   engine.nodes = [];

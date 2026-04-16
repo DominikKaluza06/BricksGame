@@ -6,6 +6,7 @@ body{
     background-image: url("../images/background.jpeg");
     background-repeat: no-repeat;
     background-size: cover;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 canvas{
     background-image: url("../images/canvasbg.jpg");
@@ -50,4 +51,9 @@ canvas{
 
 .black {
   color: black;
+}
+
+#levelShow{
+  font-size: 2rem;
+  background-color: white;
 }
