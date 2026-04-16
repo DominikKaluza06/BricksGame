@@ -42,6 +42,15 @@ function init_paddle() {
 function initbricks() {
     BRICKWIDTH = (WIDTH / NCOLS) - PADDING;
     bricks = new Array(NROWS);
+    for (let i = 0; i < levels.length; i++) {
+        for (let j = 0; j < levels[i].length; j++) {
+            for (let k = 0; k < levels[i][j].length; k++) {
+                const element = levels[i][j][k];
+                
+                }
+            }
+        }
+    //popravi
     for (let i = 0; i < NROWS; i++) {
         bricks[i] = new Array(NCOLS);
         for (let j = 0; j < NCOLS; j++) {
@@ -129,13 +138,17 @@ function draw() {
     }
 
     // 2. Risanje opek
-    for (let i = 0; i < NROWS; i++) {
-        ctx.fillStyle = rowcolors[i % rowcolors.length];
-        for (let j = 0; j < NCOLS; j++) {
-            if (bricks[i][j] == 1) {
-                rect((j * (BRICKWIDTH + PADDING)) + PADDING,
+    for (let i = 0; i < levels.length; i++) {
+        for (let j = 0; j < levels[i].length; j++) {
+            for (let k = 0; k < levels[i][j].length; k++) {
+                const element = levels[i][j][k];
+                
+                ctx.fillStyle = rowcolors[i % rowcolors.length];
+                if (bricks[i][j][k] == 1) {
+                    rect((j * (BRICKWIDTH + PADDING)) + PADDING,
                     (i * (BRICKHEIGHT + PADDING)) + PADDING,
                     BRICKWIDTH, BRICKHEIGHT);
+                }
             }
         }
     }
