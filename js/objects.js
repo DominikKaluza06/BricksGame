@@ -274,8 +274,12 @@ class Paddle extends Node2D {
       ArrowRight: false
     };
 
-    // Event listenerja spreminjata samo stanje (true/false)
-    window.addEventListener("keydown", (e) => {
+   window.addEventListener("keydown", (e) => {
+      // Prevent the browser from scrolling when pressing ANY arrow key
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault(); 
+      }
+
       if (this.keys.hasOwnProperty(e.key)) {
         this.keys[e.key] = true;
       }
