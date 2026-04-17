@@ -1,31 +1,43 @@
+var paddleImg = new Image();
+paddleImg.src = "images/paddle/paddle.png";
+var ballImg = new Image();
+ballImg.src = "images/ball/ball.png";
+
 var x = 250;
 var y = 200;
-var dx = 2;
-var dy = -4; // Žogica štarta navzgor
+var dx = 4;
+var dy = -6;
 var WIDTH;
 var HEIGHT;
-var r = 10;
+var r = 13;
 var ctx;
 var intervalId;
 var timerIntervalId;
+let offset= 3;
 
 // Ploščica
 var paddlex;
-var paddleh = 10;
-var paddlew = 75;
+var paddleh = 20;
+var paddlew = 150;
 var rightDown = false;
 var leftDown = false;
 
-// Opeke
+// Opeke in nivoji
 var bricks;
-var NROWS = 5;
-var NCOLS = 5;
+var curlvl = 0; 
+var NROWS;
+var NCOLS;
 var BRICKWIDTH;
 var BRICKHEIGHT = 20;
 var PADDING = 2;
 
-// Barve
-var rowcolors = ["#FF1C0A", "#FFFD0A", "#00A308", "#0008DB", "#EB0093"];
+var brickColors = {
+    4:  "#1A1A1A", 
+    3: "#404040", 
+    2: "#808080",
+    1: "#BFBFBF"
+};
+
 var paddlecolor = "#34495e";
 var ballcolor = "#e74c3c";
 
@@ -39,24 +51,34 @@ function init_paddle() {
     paddlex = (WIDTH / 2) - (paddlew / 2);
 }
 
-function initbricks() {
+function nalozinivo() {
+    // Preveri, če smo prešli vse nivoje
+    if (curlvl >= levels.length) {
+        clearInterval(intervalId);
+        clearInterval(timerIntervalId);
+        alert("ZMAGAL SI VSE NIVOJE!");
+        return false;
+    }
+
+    const layout = levels[curlvl];
+    NROWS = layout.length;
+    NCOLS = layout[0].length;
+
     BRICKWIDTH = (WIDTH / NCOLS) - PADDING;
     bricks = new Array(NROWS);
-    for (let i = 0; i < levels.length; i++) {
-        for (let j = 0; j < levels[i].length; j++) {
-            for (let k = 0; k < levels[i][j].length; k++) {
-                const element = levels[i][j][k];
-                
-                }
-            }
-        }
-    //popravi
+
     for (let i = 0; i < NROWS; i++) {
         bricks[i] = new Array(NCOLS);
         for (let j = 0; j < NCOLS; j++) {
-            bricks[i][j] = 1; // 1 pomeni, da opeka obstaja
+            bricks[i][j] = layout[i][j];
         }
     }
+
+    x = paddlex + (paddlew / 2);
+    y = HEIGHT - paddleh - r - 2;
+    dx = 3;
+    dy = -6;
+    return true;
 }
 
 function init() {
@@ -65,27 +87,36 @@ function init() {
     HEIGHT = $("#canvas").height();
 
     init_paddle();
-    initbricks();
 
-    tocke = 0;
-    sekunde = 0;
-    start = true;
+    // Poskusimo naložiti prvi nivo
+    if (nalozinivo()) {
+        tocke = 0;
+        sekunde = 0;
+        start = true;
 
-    $("#tocke").html(tocke);
-    $("#cas").html("00:00");
+        $("#tocke").html(tocke);
+        $("#cas").html("00:00");
 
-    // Zagon zank
-    intervalId = setInterval(draw, 10);
-    timerIntervalId = setInterval(posodobiCas, 1000);
+        // Zagon zank
+        intervalId = setInterval(draw, 10);
+        timerIntervalId = setInterval(posodobiCas, 1000);
+    }
 }
 
 // --- RISANJE OBLIK ---
 function circle(x, y, r) {
-    ctx.fillStyle = ballcolor;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2, true);
-    ctx.closePath();
-    ctx.fill();
+    if (ballImg.complete) {
+        // Sliko narišemo tako, da je sredina slike na koordinatah x, y
+        //drawImage(image, x, y, width, height)
+        ctx.drawImage(ballImg, x - r, y - r, r * 2, r * 2);
+    } else {
+        // Rezervni načrt, če se slika še nalaga
+        ctx.fillStyle = ballcolor;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
 }
 
 function rect(x, y, w, h) {
@@ -130,64 +161,89 @@ function draw() {
 
     // 1. Premik ploščice levo in desno
     if (rightDown) {
-        if ((paddlex + paddlew) < WIDTH) paddlex += 5;
+        if ((paddlex + paddlew) < WIDTH) paddlex += 8;
         else paddlex = WIDTH - paddlew;
     } else if (leftDown) {
-        if (paddlex > 0) paddlex -= 5;
+        if (paddlex > 0) paddlex -= 8;
         else paddlex = 0;
     }
 
     // 2. Risanje opek
-    for (let i = 0; i < levels.length; i++) {
-        for (let j = 0; j < levels[i].length; j++) {
-            for (let k = 0; k < levels[i][j].length; k++) {
-                const element = levels[i][j][k];
-                
-                ctx.fillStyle = rowcolors[i % rowcolors.length];
-                if (bricks[i][j][k] == 1) {
-                    rect((j * (BRICKWIDTH + PADDING)) + PADDING,
+    let opekeObstajajo = false; // Za preverjanje zmage
+    for (let i = 0; i < NROWS; i++) {
+        for (let j = 0; j < NCOLS; j++) {
+            let zivljenja = bricks[i][j];
+            if (zivljenja > 0) {
+                opekeObstajajo = true;
+                // Izbere barvo glede na število (1, 2, 3 ali 4)
+                ctx.fillStyle = brickColors[zivljenja];
+                rect(
+                    (j * (BRICKWIDTH + PADDING)) + PADDING,
                     (i * (BRICKHEIGHT + PADDING)) + PADDING,
-                    BRICKWIDTH, BRICKHEIGHT);
-                }
+                    BRICKWIDTH,
+                    BRICKHEIGHT
+                );
             }
         }
     }
 
+    // Če ni več opek z vrednostjo > 0, gremo na naslednji nivo
+    if (!opekeObstajajo) {
+        curlvl++;
+        nalozinivo();
+    }
+
     // 3. Risanje ploščice
-    ctx.fillStyle = paddlecolor;
-    rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+    if (paddleImg.complete) {
+        ctx.drawImage(paddleImg, paddlex, HEIGHT - paddleh, paddlew, paddleh);
+    } else {
+        // Rezervni načrt: če se slika še nalaga, nariši navaden pravokotnik
+        ctx.fillStyle = paddlecolor;
+        rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+    }
 
     // 4. Risanje kroglice
     circle(x, y, r);
 
-    // 5. Zaznavanje trkov z opekami
+// 5. Zaznavanje trkov z opekami (Upoštevamo rob žogice)
     let rowheight = BRICKHEIGHT + PADDING;
     let colwidth = BRICKWIDTH + PADDING;
-    let row = Math.floor(y / rowheight);
+    
+    // Preverjamo točko na robu žogice, ne v sredini
+    let testY = (dy < 0) ? (y - r) : (y + r);
+    let row = Math.floor(testY / rowheight);
     let col = Math.floor(x / colwidth);
 
-    if (y < NROWS * rowheight && row >= 0 && col >= 0 && bricks[row][col] == 1) {
+    if (row < NROWS && row >= 0 && col >= 0 && col < NCOLS && bricks[row][col] > 0) {
         dy = -dy;
-        bricks[row][col] = 0;
+        bricks[row][col]--;
         tocke += 1;
         $("#tocke").html(tocke);
+        
+        // Takojšen popravek pozicije, da ne obtiči v naslednjem koraku
+        y += dy; 
     }
 
-    // 6. Zaznavanje trkov z zidovi in ploščico
+// 6. Zaznavanje trkov z zidovi in ploščico
     if (x + dx > WIDTH - r || x + dx < r) dx = -dx;
 
     if (y + dy < r) {
-        dy = -dy;
-    } else if (y + dy > HEIGHT - r) {
-        start = false; // Čas se ob trku na dno ustavi
-
-        // Preverjanje, ali je kroglica zadela ploščico
+        dy = -dy; // Odboj od vrha
+    } 
+    else if (y + dy > HEIGHT - paddleh - r + offset) { 
+        // 1. Preverimo, če je žogica vodoravno poravnana s ploščico
         if (x > paddlex && x < paddlex + paddlew) {
-            dx = 8 * ((x - (paddlex + paddlew / 2)) / paddlew); // Kot odboja glede na to, kje udari ploščico
+            // Odboj od ploščice
+            dx = 15 * ((x - (paddlex + paddlew / 2)) / paddlew);
             dy = -dy;
-            start = true; // Čas teče naprej
-        } else {
-            // Konec igre
+            
+            // Popravek pozicije, da ne "potone"
+            y = HEIGHT - paddleh - r + offset; 
+            start = true;
+        } 
+        // 2. Če ni nad ploščico, preverimo, če je padla čez spodnji rob
+        else if (y + dy > HEIGHT - r) {
+            start = false;
             clearInterval(intervalId);
             clearInterval(timerIntervalId);
             ctx.fillStyle = "black";
@@ -195,7 +251,6 @@ function draw() {
             ctx.fillText("KONEC IGRE!", WIDTH / 2 - 100, HEIGHT / 2);
         }
     }
-
     // 7. Premik kroglice
     x += dx;
     y += dy;
