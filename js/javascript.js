@@ -189,8 +189,15 @@ function draw() {
 
     // Če ni več opek z vrednostjo > 0, gremo na naslednji nivo
     if (!opekeObstajajo) {
-        curlvl++;
-        nalozinivo();
+        // 1. PAVZA IGRE: Ustavimo osveževanje platna in časa
+        clearInterval(intervalId);
+        clearInterval(timerIntervalId);
+        
+        curlvl++; // Povečamo števec za naslednji nivo
+        
+        // 2. Kličemo SweetAlert
+        zmagaLevel(curlvl);
+        return; // Prekinemo trenutno izvajanje funkcije draw()
     }
 
     // 3. Risanje ploščice
