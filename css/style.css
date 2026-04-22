@@ -1,9 +1,4 @@
-:root {
-    --primary-color: #34495e;
-    --accent-color: #e74c3c;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --neon-glow: 0 0 15px rgba(255, 255, 255, 0.3);
-}
+
 
 body {
     background-size: cover;
@@ -31,7 +26,6 @@ body {
     font-family: 'Orbitron', sans-serif;
     font-size: 2rem;
     letter-spacing: 5px;
-    text-shadow: var(--neon-glow);
 }
 
 .white { color: #fff; background-color: #000000;}
@@ -68,7 +62,6 @@ body {
     font-family: 'Orbitron', sans-serif;
 }
 
-/* Življenja (Slike loparjev) */
 .lives-container {
     display: flex;
     gap: 8px;
@@ -79,15 +72,12 @@ body {
 
 .life-icon {
     width: 40px;
-    height: auto;
-    transition: transform 0.3s ease;
 }
 
 
 .canvas-wrapper {
     border: 4px solid rgba(255,255,255,0.1);
     box-shadow: 0 0 10px rgba(0,0,0,0.8);
-    overflow: hidden;
 }
 
 canvas {
@@ -99,7 +89,7 @@ canvas {
 #level-display {
     margin-top: 20px;
     font-size: 1.5rem;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.249);
     padding: 5px 20px;
     border-radius: 10px;
 }

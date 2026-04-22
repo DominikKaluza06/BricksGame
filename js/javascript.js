@@ -5,15 +5,14 @@ ballImg.src = "images/ball/ball.png";
 
 var x = 250;
 var y = 200;
-var dx = 4;
-var dy = -6;
+var dx = 2;
+var dy = -3;
 var WIDTH;
 var HEIGHT;
-var r = 13;
+var r = 10;
 var ctx;
 var intervalId;
 var timerIntervalId;
-var offset= 3;
 
 // Ploščica
 var paddlex;
@@ -40,7 +39,6 @@ var brickColors = {
 };
 
 
-// Točke in čas
 var tocke = 0;
 var sekunde = 0;
 var start = true;
@@ -52,7 +50,7 @@ function init_paddle() {
 
 function nalozinivo() {
     posodobiZivljenjaUI();
-    $("#levelShow").text(curlvl + 1);
+    $("#levelShow").text("LEVEL: "+(curlvl + 1));
     if (curlvl >= levels.length) {
         clearInterval(intervalId);
         clearInterval(timerIntervalId);
@@ -85,8 +83,8 @@ function nalozinivo() {
 function respawnBall() {
     x = paddlex + (paddlew / 2);
     y = HEIGHT - paddleh - r - 10; // Malce višje nad ploščico
-    dx = 3;
-    dy = -6;
+    dx = 2;
+    dy = -3;
 }
 
 function init() {
@@ -224,13 +222,13 @@ function draw() {
     circle(x, y, r);
 
 // 5. Zaznavanje trkov z opekami (Upoštevamo rob žogice)
-    let rowheight = BRICKHEIGHT + PADDING;
-    let colwidth = BRICKWIDTH + PADDING;
+    var rowheight = BRICKHEIGHT + PADDING;
+    var colwidth = BRICKWIDTH + PADDING;
     
-    // Preverjamo točko na robu žogice, ne v sredini
-    let testY = (dy < 0) ? (y - r) : (y + r);
-    let row = Math.floor(testY / rowheight);
-    let col = Math.floor(x / colwidth);
+    // navpicen trk
+    var testY = (dy < 0) ? (y - r) : (y + r);
+    var row = Math.floor(testY / rowheight);
+    var col = Math.floor(x / colwidth);
 
     if (row < NROWS && row >= 0 && col >= 0 && col < NCOLS && bricks[row][col] > 0) {
         dy = -dy;
@@ -242,13 +240,29 @@ function draw() {
         y += dy; 
     }
 
+    // 2. Preverimo vodoravni trk (stranice opeke)
+    var testX = (dx < 0) ? (x - r) : (x + r);
+    var rowX = Math.floor(y / rowheight);
+    var colX = Math.floor(testX / colwidth);
+
+    if (rowX < NROWS && rowX >= 0 && colX >= 0 && colX < NCOLS && bricks[rowX][colX] > 0) {
+        dx = -dx; 
+        // Če opeka še ni bila uničena v prejšnjem koraku (Y trk), jo zmanjšamo zdaj
+        if (bricks[rowX][colX] > 0) { 
+            bricks[rowX][colX]--;
+            tocke += 1;
+            $("#tocke").html(tocke);
+        }
+        x += dx; // Takojšen premik iz opeke
+    }
+
 // 6. Zaznavanje trkov z zidovi in ploščico
     if (x + dx > WIDTH - r || x + dx < r) dx = -dx;
 
     if (y + dy < r) {
         dy = -dy; // Odboj od vrha
     } 
-    else if (y + dy > HEIGHT - paddleh - r + offset) { 
+    else if (y + dy > HEIGHT - paddleh - r * 2) { 
         // 1. Preverimo, če je žogica vodoravno poravnana s ploščico
         if (x > paddlex && x < paddlex + paddlew) {
             // Odboj od ploščice
@@ -256,10 +270,10 @@ function draw() {
             dy = -dy;
             
             // Popravek pozicije, da ne gre v opeke
-            y = HEIGHT - paddleh - r + offset; 
+            y = HEIGHT - paddleh - r * 2; 
             start = true;
         } 
-        // 2. Če ni nad ploščico, preverimo, če je padla čez spodnji rob
+        // 2. Če ni nad ploščico, preveri, če je padla čez spodnji rob
         else if (y + dy > HEIGHT - r) {
             life--;
             posodobiZivljenjaUI();
