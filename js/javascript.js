@@ -51,6 +51,8 @@ function init_paddle() {
 }
 
 function nalozinivo() {
+    posodobiZivljenjaUI();
+    $("#levelShow").text(curlvl + 1);
     if (curlvl >= levels.length) {
         clearInterval(intervalId);
         clearInterval(timerIntervalId);
@@ -92,6 +94,8 @@ function init() {
     WIDTH = $("#canvas").width();
     HEIGHT = $("#canvas").height();
 
+    posodobiZivljenjaUI();
+
     init_paddle();
 
     // Poskusimo naložiti prvi nivo
@@ -99,6 +103,7 @@ function init() {
         tocke = 0;
         sekunde = 0;
         start = true;
+        
 
         $("#tocke").html(tocke);
         $("#cas").html("00:00");
@@ -256,8 +261,8 @@ function draw() {
         } 
         // 2. Če ni nad ploščico, preverimo, če je padla čez spodnji rob
         else if (y + dy > HEIGHT - r) {
-            life--; // Odštejemo življenje
-            $("#zivljenja").html(life); // Posodobimo izpis
+            life--;
+            posodobiZivljenjaUI();
 
             if (life > 0) {
                 respawnBall();
@@ -271,6 +276,20 @@ function draw() {
     // 7. Premik kroglice
     x += dx;
     y += dy;
+}
+
+function posodobiZivljenjaUI() {
+    var container = $("#lives-icons");
+    container.empty(); // Izprazni stare slike
+
+    for (var i = 0; i < life; i++) {
+        // Ustvarimo novo sliko za vsako življenje
+        var img = $('<img>', {
+            src: 'images/paddle/paddle.png',
+            class: 'life-icon'
+        });
+        container.append(img);
+    }
 }
 
 // Zagon igre, ko je stran naložena

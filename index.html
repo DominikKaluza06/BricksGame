@@ -1,41 +1,53 @@
 <!DOCTYPE html>
 <html lang="sl">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="images/icoc.ico" href="images/icoc.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Bricks Board</title>
-  </head>
+</head>
 
 <body>
-  <div id="main" class="centered_content col_dir">
-    <div class="header-container">
-      <h1 class="white">BRICKS</h1>
-      <h1 class="black">BOARD</h1>
-    </div>
-    
-    <div class="info-vrstica">
-        <p>Čas: <mark id="cas">00:00</mark></p>
-        <p>Točke: <mark id="tocke">0</mark></p>
-        <p>Življenja: <mark id="zivljenja">3</mark></p>
+    <div id="main" class="col_dir">
+        <header class="header-container">
+            <h1 class="title-glow"><span class="white">BRICKS</span><span class="black">BOARD</span></h1>
+        </header>
+        
+        <div class="stats-panel">
+            <div class="stat-box">
+                <span class="label">ČAS</span>
+                <span id="cas" class="value">00:00</span>
+            </div>
+            
+            <div class="stat-box">
+                <span class="label">TOČKE</span>
+                <span id="tocke" class="value">0</span>
+            </div>
+
+            <div class="stat-box">
+                <span class="label">ŽIVLJENJA</span>
+                <div id="lives-icons" class="lives-container">
+                    </div>
+            </div>
+        </div>
+
+        <div id="game_container">
+            <div class="canvas-wrapper">
+                <canvas id="canvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+
+        <div id="level-display">
+            <p id="levelShow">LEVEL: 1></p>
+        </div>
     </div>
 
-    <div id="game_container">
-      <div class="border">
-        <canvas id="canvas" width="800" height="800"></canvas>
-      </div>
-    </div>
-    <div id="level">
-      <p id="levelShow"></p>
-    </div>
-  </div>
-
-  <script src="js/jquery-4.0.0.min.js"></script>
-  <script src="js/javascript.js"></script>
-  <script src="js/levels.js"></script>
-  <script src="js/functions.js"></script>
-
+    <script src="js/jquery-4.0.0.min.js"></script>
+    <script src="js/javascript.js"></script>
+    <script src="js/levels.js"></script>
+    <script src="js/functions.js"></script>
 </body>
 </html>

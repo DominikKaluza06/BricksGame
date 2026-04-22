@@ -29,8 +29,8 @@ function zmagaLevel(trenutniLevel) {
         confirmButtonColor: "#185abc",
         text: "Opravil si " + trenutniLevel + ". level"
     }).then(() => {
-        // 3. ODPAVZIRANJE IGRE: Naložimo novo postavitev in vrnemo intervale
         if (nalozinivo()) {
+            posodobiZivljenjaUI();
             intervalId = setInterval(draw, 10);
             timerIntervalId = setInterval(posodobiCas, 1000);
         }
@@ -60,6 +60,7 @@ function konecIgre() {
             
             // Naloži nivo in ponovno zažene zanke
             if (nalozinivo()) {
+                posodobiZivljenjaUI();
                 intervalId = setInterval(draw, 10);
                 timerIntervalId = setInterval(posodobiCas, 1000);
                 start = true;
