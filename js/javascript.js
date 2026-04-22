@@ -13,7 +13,7 @@ var r = 13;
 var ctx;
 var intervalId;
 var timerIntervalId;
-let offset= 3;
+var offset= 3;
 
 // Ploščica
 var paddlex;
@@ -33,14 +33,12 @@ var PADDING = 2;
 var life = 3;
 
 var brickColors = {
-    4:  "#1A1A1A", 
+    4: "#1A1A1A", 
     3: "#404040", 
     2: "#808080",
     1: "#BFBFBF"
 };
 
-var paddlecolor = "#34495e";
-var ballcolor = "#e74c3c";
 
 // Točke in čas
 var tocke = 0;

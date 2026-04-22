@@ -54,11 +54,11 @@ function konecIgre() {
             tocke = 0;
             sekunde = 0;
             
-            // Posodobimo izpis v HTML
+            // Posodobi izpis v HTML
             $("#tocke").html(tocke);
             $("#cas").html("00:00");
             
-            // Naložimo nivo in ponovno zaženemo zanke
+            // Naloži nivo in ponovno zažene zanke
             if (nalozinivo()) {
                 intervalId = setInterval(draw, 10);
                 timerIntervalId = setInterval(posodobiCas, 1000);
