@@ -30,6 +30,7 @@ var NCOLS;
 var BRICKWIDTH;
 var BRICKHEIGHT = 20;
 var PADDING = 2;
+var life = 3;
 
 var brickColors = {
     4:  "#1A1A1A", 
@@ -52,13 +53,16 @@ function init_paddle() {
 }
 
 function nalozinivo() {
-    // Preveri, če smo prešli vse nivoje
     if (curlvl >= levels.length) {
         clearInterval(intervalId);
         clearInterval(timerIntervalId);
         alert("ZMAGAL SI VSE NIVOJE!");
         return false;
     }
+
+    // PONASTAVITEV ŽIVLJENJ OB NOVEM NIVOJU
+    life = 3;
+    $("#zivljenja").html(life);
 
     const layout = levels[curlvl];
     NROWS = layout.length;
@@ -74,11 +78,15 @@ function nalozinivo() {
         }
     }
 
+    respawnBall(); // Postavi žogico na začetno točko
+    return true;
+}
+
+function respawnBall() {
     x = paddlex + (paddlew / 2);
-    y = HEIGHT - paddleh - r - 2;
+    y = HEIGHT - paddleh - r - 10; // Malce višje nad ploščico
     dx = 3;
     dy = -6;
-    return true;
 }
 
 function init() {
@@ -244,18 +252,22 @@ function draw() {
             dx = 15 * ((x - (paddlex + paddlew / 2)) / paddlew);
             dy = -dy;
             
-            // Popravek pozicije, da ne "potone"
+            // Popravek pozicije, da ne gre v opeke
             y = HEIGHT - paddleh - r + offset; 
             start = true;
         } 
         // 2. Če ni nad ploščico, preverimo, če je padla čez spodnji rob
         else if (y + dy > HEIGHT - r) {
-            start = false;
-            clearInterval(intervalId);
-            clearInterval(timerIntervalId);
-            ctx.fillStyle = "black";
-            ctx.font = "30px Arial";
-            ctx.fillText("KONEC IGRE!", WIDTH / 2 - 100, HEIGHT / 2);
+            life--; // Odštejemo življenje
+            $("#zivljenja").html(life); // Posodobimo izpis
+
+            if (life > 0) {
+                respawnBall();
+            } else {
+                clearInterval(intervalId);
+                clearInterval(timerIntervalId);
+                konecIgre();
+            }
         }
     }
     // 7. Premik kroglice

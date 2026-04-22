@@ -37,5 +37,37 @@ function zmagaLevel(trenutniLevel) {
     });
 }
 
+function konecIgre() {
+    Swal.fire({
+        icon: 'error',
+        iconColor: '#df2d19',
+        title: 'Konec igre!',
+        text: 'Zmanjkalo ti je življenj',
+        confirmButtonText: 'Ponovni začetek',
+        confirmButtonColor: '#35495c',
+        allowOutsideClick: false,
+        confirmButtonText: "poskusi znova"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // PONASTAVITEV NA LEVEL 0
+            curlvl = 0;
+            tocke = 0;
+            sekunde = 0;
+            
+            // Posodobimo izpis v HTML
+            $("#tocke").html(tocke);
+            $("#cas").html("00:00");
+            
+            // Naložimo nivo in ponovno zaženemo zanke
+            if (nalozinivo()) {
+                intervalId = setInterval(draw, 10);
+                timerIntervalId = setInterval(posodobiCas, 1000);
+                start = true;
+            }
+        }
+    });
+}
+
+
 
 
