@@ -6,7 +6,7 @@ ballImg.src = "images/ball/ball.png";
 var x = 250;
 var y = 200;
 var dx = 2;
-var dy = -3;
+var dy = -2;
 var WIDTH;
 var HEIGHT;
 var r = 10;
@@ -84,7 +84,7 @@ function respawnBall() {
     x = paddlex + (paddlew / 2);
     y = HEIGHT - paddleh - r - 10; // Malce višje nad ploščico
     dx = 2;
-    dy = -3;
+    dy = -2;
 }
 
 function init() {
