@@ -19,7 +19,7 @@ body {
 /* Naslov */
 .header-container {
     margin-top: 20px;
-    margin-bottom: 30px;
+
 }
 
 .title-glow {
@@ -71,6 +71,18 @@ body {
 
 .life-icon {
     width: 40px;
+}
+
+#navodila{
+    margin-bottom: 10px;
+    background-color:#fff;
+    padding: 10px;
+    border: 4px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 4px 4px 16px rgba(0,0,0,0.5);
+    border-radius: 4px;
+    font-family: 'Orbitron', sans-serif;
+    font-size:  1.2rem;
+    font-weight: bold;
 }
 
 

@@ -50,7 +50,7 @@ function init_paddle() {
 
 function nalozinivo() {
     posodobiZivljenjaUI();
-    $("#levelShow").text("LEVEL: "+(curlvl + 1));
+    $("#levelShow").text("LEVEL: "+(curlvl + 1) + "/8");
     if (curlvl >= levels.length) {
         clearInterval(intervalId);
         clearInterval(timerIntervalId);
@@ -96,7 +96,7 @@ function init() {
 
     init_paddle();
 
-    // Poskusimo naložiti prvi nivo
+    // Poskusi naložiti prvi nivo
     if (nalozinivo()) {
         tocke = 0;
         sekunde = 0;
@@ -107,25 +107,23 @@ function init() {
         $("#cas").html("00:00");
 
         // Zagon zank
-        intervalId = setInterval(draw, 10);
-        timerIntervalId = setInterval(posodobiCas, 1000);
+        unpause();
     }
 }
 
 // --- RISANJE OBLIK ---
 function circle(x, y, r) {
     if (ballImg.complete) {
-        // Sliko narišemo tako, da je sredina slike na koordinatah x, y
-        //drawImage(image, x, y, width, height)
         ctx.drawImage(ballImg, x - r, y - r, r * 2, r * 2);
-    } else {
-        // Rezervni načrt, če se slika še nalaga
-        ctx.fillStyle = ballcolor;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fill();
     }
+}
+function pause(){
+    clearInterval(intervalId);
+    clearInterval(timerIntervalId);
+}
+function unpause(){
+    intervalId = setInterval(draw, 10);
+    timerIntervalId = setInterval(posodobiCas, 1000);
 }
 
 function rect(x, y, w, h) {
@@ -155,7 +153,12 @@ function posodobiCas() {
 
 // --- VHODNI PODATKI (TIPKOVNICA) ---
 $(document).keydown(function (evt) {
-    if (evt.keyCode == 39) rightDown = true;
+    if([37, 38, 39, 40].indexOf(evt.keyCode) > -1) {
+        evt.preventDefault();
+    }
+    if (evt.keyCode == 39){ 
+        rightDown = true;
+    }
     else if (evt.keyCode == 37) leftDown = true;
 });
 
@@ -199,8 +202,7 @@ function draw() {
     // Če ni več opek z vrednostjo > 0, gremo na naslednji nivo
     if (!opekeObstajajo) {
         // 1. PAVZA IGRE: Ustavimo osveževanje platna in časa
-        clearInterval(intervalId);
-        clearInterval(timerIntervalId);
+        pause();
         
         curlvl++; // Povečamo števec za naslednji nivo
         
@@ -240,7 +242,7 @@ function draw() {
         y += dy; 
     }
 
-    // 2. Preverimo vodoravni trk (stranice opeke)
+    // 5.2. Preverimo vodoravni trk (stranice opeke)
     var testX = (dx < 0) ? (x - r) : (x + r);
     var rowX = Math.floor(y / rowheight);
     var colX = Math.floor(testX / colwidth);
@@ -257,7 +259,9 @@ function draw() {
     }
 
 // 6. Zaznavanje trkov z zidovi in ploščico
-    if (x + dx > WIDTH - r || x + dx < r) dx = -dx;
+    if (x + dx > WIDTH - r || x + dx < r){
+         dx = -dx;
+    }
 
     if (y + dy < r) {
         dy = -dy; // Odboj od vrha
@@ -281,8 +285,7 @@ function draw() {
             if (life > 0) {
                 respawnBall();
             } else {
-                clearInterval(intervalId);
-                clearInterval(timerIntervalId);
+                pause();
                 konecIgre();
             }
         }

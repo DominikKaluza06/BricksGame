@@ -27,13 +27,24 @@ function zmagaLevel(trenutniLevel) {
         iconColor: "#48a84f",
         title: "Bravo!",
         confirmButtonColor: "#185abc",
-        text: "Opravil si " + trenutniLevel + ". level"
+        text: "Opravil si level " + trenutniLevel + " / 8"
     }).then(() => {
         if (nalozinivo()) {
             posodobiZivljenjaUI();
-            intervalId = setInterval(draw, 10);
-            timerIntervalId = setInterval(posodobiCas, 1000);
+            unpause();
         }
+    });
+}
+
+function navodila() {
+    Swal.fire({
+        allowOutsideClick: false,
+        title: "Navodila!",
+        confirmButtonColor: "#185abc",
+
+        text: "z puščicami levo in desno premikaj paddle. Imaš 3 življenja, ki jih pridobiš nazaj vsak level",
+    }).then(()=> {
+        unpause();
     });
 }
 
@@ -61,8 +72,7 @@ function konecIgre() {
             // Naloži nivo in ponovno zažene zanke
             if (nalozinivo()) {
                 posodobiZivljenjaUI();
-                intervalId = setInterval(draw, 10);
-                timerIntervalId = setInterval(posodobiCas, 1000);
+                unpause();
                 start = true;
             }
         }
